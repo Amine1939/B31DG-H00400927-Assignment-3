@@ -7,8 +7,6 @@
 extern uint32_t WorkKernel(uint32_t budget_cycles, uint32_t seed);
 
 // Mutex for shared token data
-// The LOCK / UNLOCK functions dont operate when the mutex is NULL so the same
-// source file compiles and works correctly for both assignments.
 static SemaphoreHandle_t token_mutex = NULL;
 
 void tasks_set_mutex(SemaphoreHandle_t m) {

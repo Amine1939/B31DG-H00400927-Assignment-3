@@ -5,7 +5,6 @@
 void gpio_setup()
 {
     // GPIO34 is input-only and has no internal pull-down on ESP32.
-    // Use an external resistor if you need SYNC to be biased.
     gpio_set_direction(SYNC_PIN, GPIO_MODE_INPUT);
     gpio_set_direction(IN_S_PIN, GPIO_MODE_INPUT);
     // IN_MODE: external DC signal (HIGH = tasks C/D enabled, LOW = disabled)
