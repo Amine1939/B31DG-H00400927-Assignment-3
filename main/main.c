@@ -10,7 +10,7 @@
 #include "monitor.h"
 
 // CPU Core & scheduling constants
-#define APP_CORE 0 // All tasks must run on core 0
+#define APP_CORE 0
 
 // Tasks periods
 #define PERIOD_A_MS 10
@@ -29,7 +29,7 @@
 #define PRIORITY_C     3           // 50 ms
 #define PRIORITY_D     3           // 50 ms
 
-// 4000 words (~15.6 KB) gives comfortable headroom for printing.
+// 4000 words (~15.6 KB) gives comfortable memory for printing.
 #define STACK_WORDS 4000
 
 // Synchronisation primitives 

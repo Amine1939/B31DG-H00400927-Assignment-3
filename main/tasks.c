@@ -115,6 +115,7 @@ void task_C(uint32_t monitor_id) {
 }
 
 // Task D (50 ms periodic if in_mode = 1)
+// IDD only increments when this function is actually called.
 void task_D(uint32_t monitor_id) {
     beginTaskD(monitor_id);
     set_ack_D(1);
