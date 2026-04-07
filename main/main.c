@@ -22,10 +22,10 @@
 // Rate-monotonic priorities (higher number = higher FreeRTOS priority).
 // Task S shares priority 4 with Task B so a sporadic trigger is serviced
 // within the same band.
-#define PRIORITY_A     5           // 10 ms  — highest
+#define PRIORITY_A     5           // 10 ms
 #define PRIORITY_B     4           // 20 ms
-#define PRIORITY_S     1           // sporadic ≤ 30 ms response
-#define PRIORITY_AGG   4           // 20 ms  — must follow B
+#define PRIORITY_S     1           // sporadic <= 30 ms response time
+#define PRIORITY_AGG   4           // 20 ms
 #define PRIORITY_C     3           // 50 ms
 #define PRIORITY_D     3           // 50 ms
 
@@ -40,13 +40,9 @@ static SemaphoreHandle_t xSporadicSem;      // counting semaphore: one unit per 
 static TaskHandle_t hA, hB, hAGG, hC, hD, hS;
 
 // T0 in FreeRTOS ticks: moment SYNC goes HIGH.
-// All vTaskDelayUntil calls are anchored to this value so periods
-// are exact multiples of T0 with no drift.
 static volatile TickType_t t0_tick = 0;
 
 // IN_MODE is sampled at discrete 50ms instants by Task C/D.
-// Latch it once it goes high so C/D keep executing for the
-// remainder of the run.
 static volatile bool in_mode_pressed = false;
 
 // ISR: rising edge on IN_S
@@ -93,8 +89,7 @@ static void vTaskAGG(void *arg) {
 }
 
 // Tasks C and D: check IN_MODE each period before executing.
-// When IN_MODE == 0 the task (and its IDX increment) is simply skipped,
-// which is exactly what the spec requires meaning no ACK puls and IDX does not advance.
+// When IN_MODE == 0 the task (and its IDX increment) is skipped.
 static void vTaskC(void *arg) {
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     TickType_t xLastWake = t0_tick;
@@ -128,7 +123,7 @@ static void vTaskD(void *arg) {
     }
 }
 
-// Task S: purely event-driven. 
+// Task S: 
 //      1. Blocks on the counting semaphor 
 //      2. the ISR gives one unit per IN_S rising edge.  
 //      3. Priority 4 ensures an accurate response 
@@ -176,8 +171,7 @@ void app_main(void) {
     // Polling until SYNC pulse is received, no tasks are running yet.
     while (!read_SYNC());
 
-    // Capture T0 in FreeRTOS ticks before waking any task so that
-    // every vTaskDelayUntil call is anchored to the same reference point.
+    // Capture T0 in FreeRTOS ticks before waking any task
     t0_tick = xTaskGetTickCount();
     in_mode_pressed = false;
     synch(); // notify monitor of T0
@@ -197,7 +191,7 @@ void app_main(void) {
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(100));
         if (monitorPollReports()) {
-            // Final report has been printed; suspend indefinitely.
+            // Final report has been printed, suspend system.
             while (1) { vTaskDelay(portMAX_DELAY); }
         }
     }

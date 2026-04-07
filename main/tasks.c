@@ -48,26 +48,26 @@ void task_A() {
     printf("A,%"PRIu32",%d,%"PRIu32"\n", IDA, countA, token);
     IDA++;
 
-    set_ack_A(0);                               // ACK LOW: execution ends
+    set_ack_A(0);   // ACK LOW: execution ends
     endTaskA();
 }
 
 // Task B (20 ms periodic)
 void task_B() {
     beginTaskB(IDB);
-    set_ack_B(1);
+    set_ack_B(1);   // When ACK is HIGH, execution begins
 
-    int countB = edges_B();
+    int countB = edges_B(); // rising edges on IN_A over last 20 ms
 
     uint32_t seed  = (IDB << 16) ^ countB ^ 0xB2;
     uint32_t token = WorkKernel(960000, seed);
 
-    publish_tokenB(token);
+    publish_tokenB(token);  // share result with Task AGG (mutex-protected)
 
     printf("B,%"PRIu32",%d,%"PRIu32"\n", IDB, countB, token);
     IDB++;
 
-    set_ack_B(0);
+    set_ack_B(0);   // ACK LOW: execution ends
     endTaskB();
 }
 
